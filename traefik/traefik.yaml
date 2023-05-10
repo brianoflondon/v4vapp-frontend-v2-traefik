@@ -1,0 +1,76 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false  # true by default
+
+# (Optional) Log information
+# ---
+log:
+  level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+#     format: common  # common, json, logfmt
+#     filePath: /var/log/traefik/traefik.log
+
+accesslog:
+  format: common  # common, json, logfmt
+  # filePath: /var/log/traefik/access.log
+
+
+# (Optional) Enable API and Dashboard
+# ---
+api:
+ dashboard: true  # true by default
+ insecure: true
+
+experimental:
+  http3: true
+
+entryPoints:
+  web:
+    address: :80
+    # (Optional) Redirect to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: :443
+
+# These resolvers use Cloudflare DNS API instead of web challenge
+certificatesResolvers:
+  cloudflare-staging:
+    acme:
+      email: ssl@v4v.app
+      storage: /ssl-certs/acme.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare
+
+  cloudflare-production:
+    acme:
+      email: ssl@v4v.app
+      storage: /ssl-certs/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: cloudflare
+
+http:
+  routers:
+    dashboard:
+      entryPoints:
+        - "websecure"
+      rule: Host(`2.v4v.app`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      service: api@internal
+      tls:
+        certresolver: cloudflare-production
+
+  services:
+
+
+providers:
+  docker:
+    exposedByDefault: false  # Default is true
+  file:
+    # watch for dynamic configuration changes
+    directory: /etc/traefik
+    watch: true
