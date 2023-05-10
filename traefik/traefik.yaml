@@ -59,13 +59,24 @@ http:
     dashboard:
       entryPoints:
         - "websecure"
-      rule: Host(`2.v4v.app`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      rule: Host(`2dash.v4v.app`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       service: api@internal
       tls:
         certresolver: cloudflare-production
 
-  services:
+    dev-frontend:
+      entryPoints:
+        - "websecure"
+      rule: Host(`2.v4v.app`)
+      tls:
+        certresolver: cloudflare-production
+      service: dev-frontend
 
+  services:
+    dev-frontend:
+      loadBalancer:
+        servers:
+          - url: "http://dev-frontend"
 
 providers:
   docker:

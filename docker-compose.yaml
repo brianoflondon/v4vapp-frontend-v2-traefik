@@ -23,6 +23,22 @@ services:
           max-size: "10m"
 
 
+  dev-frontend:
+    container_name: dev-frontend
+    image: nginx
+    restart: always
+    labels:
+      # Enable Traefik for this specific "api" service
+      - traefik.enable=true
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "10m"
+    networks:
+      - traefik-public-p51
+
+
 
 
 networks:
