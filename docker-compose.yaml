@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  traefik:
+    image: "traefik:latest"
+    container_name: "traefik-p51"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./traefik:/etc/traefik
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-ssl-certs:/ssl-certs
+    networks:
+      - traefik-public-p51
+    env_file:
+      - .env
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "10m"
+
+
+  dev-frontend:
+    container_name: dev-frontend
+    image: brianoflondon/v4vapp-frontend-v2:develop
+    restart: always
+    labels:
+      # Enable Traefik for this specific "api" service
+      - traefik.enable=true
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "10m"
+    networks:
+      - traefik-public-p51
+
+
+
+
+networks:
+  traefik-public-p51:
+    driver: bridge
+
+
+volumes:
+  traefik-ssl-certs:
+    driver: local
