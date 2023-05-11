@@ -17,7 +17,7 @@ accesslog:
 # (Optional) Enable API and Dashboard
 # ---
 api:
- dashboard: true  # true by default
+ dashboard: false  # true by default
  insecure: true
 
 experimental:
