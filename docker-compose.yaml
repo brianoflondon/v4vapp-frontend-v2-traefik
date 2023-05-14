@@ -22,7 +22,6 @@ services:
           max-file: "5"
           max-size: "10m"
 
-
   dev-frontend:
     container_name: dev-frontend
     image: brianoflondon/v4vapp-frontend-v2:develop
@@ -37,9 +36,6 @@ services:
           max-size: "10m"
     networks:
       - traefik-public-p51
-
-
-
 
 networks:
   traefik-public-p51:
