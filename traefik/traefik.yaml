@@ -40,7 +40,7 @@ entryPoints:
 certificatesResolvers:
   cloudflare-staging:
     acme:
-      email: ssl@v4v.app
+      email: {env "CERT_EMAIL"}
       storage: /ssl-certs/acme.json
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       dnsChallenge:
@@ -48,11 +48,29 @@ certificatesResolvers:
 
   cloudflare-production:
     acme:
-      email: ssl@v4v.app
+      email: {env "CERT_EMAIL"}
       storage: /ssl-certs/acme.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       dnsChallenge:
         provider: cloudflare
+
+  # Adding back to use let's encrypt without cloudflare
+  staging:
+    acme:
+      email: {env "CERT_EMAIL"}
+      storage: /ssl-certs/acme.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+
+  production:
+    acme:
+      email: {env "CERT_EMAIL"}
+      storage: /ssl-certs/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+
 
 http:
   routers:
@@ -72,11 +90,33 @@ http:
         certresolver: cloudflare-production
       service: dev-frontend
 
+    dev-frontend-demo:
+      entryPoints:
+        - "websecure"
+      rule: Host(`demo.v4v.app`)
+      tls:
+        certresolver: cloudflare-production
+      service: dev-frontend
+
+    guid-resolver:
+      entryPoints:
+        - "web"
+        - "websecure"
+      rule: Host(`guid.podping.org`)
+      tls:
+        certresolver: production
+      service: guid-resolver
+
   services:
     dev-frontend:
       loadBalancer:
         servers:
           - url: "http://dev-frontend"
+
+    guid-resolver:
+      loadBalancer:
+        servers:
+          - url: "http://guid-slurp-api:80"
 
 providers:
   docker:

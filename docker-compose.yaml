@@ -24,7 +24,7 @@ services:
 
   dev-frontend:
     container_name: dev-frontend
-    image: brianoflondon/v4vapp-frontend-v2:develop
+    image: brianoflondon/v4vapp-frontend-v2:pr-31
     restart: always
     labels:
       # Enable Traefik for this specific "api" service
