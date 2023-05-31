@@ -5,7 +5,7 @@ global:
 # (Optional) Log information
 # ---
 log:
-  level: DEBUG  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 #     format: common  # common, json, logfmt
 #     filePath: /var/log/traefik/traefik.log
 
@@ -102,7 +102,7 @@ http:
       entryPoints:
         - "web"
         - "websecure"
-      rule: Host(`guid.podping.org`)
+      rule: Host(`guid.podping.org`) || Host(`guid2.podping.org`)
       tls:
         certresolver: production
       service: guid-resolver
